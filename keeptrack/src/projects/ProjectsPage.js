@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { projectAPI } from './projectAPI';
 import ProjectList from './ProjectList';
+import { Project } from './Project';
 
 function ProjectsPage() {
     const [projects, setProjects] = useState([]);
@@ -32,10 +33,17 @@ function ProjectsPage() {
     }, [currentPage]);
 
     const saveProject = (project) => {
-        let updatedProjects = projects.map((p) => {
-            return p.id === project.id ? project : p;
-        });
-        setProjects(updatedProjects);
+        projectAPI
+            .put(project)
+            .then((updatedProject) => {
+                let updatedProjects = projects.map((p) => {
+                    return p.id === project.id ? new Project(updatedProject) : p;
+                });
+                setProjects(updatedProjects);
+            })
+            .catch((e) => {
+                setError(e.message);
+            });
     };
     return (
         <Fragment>
